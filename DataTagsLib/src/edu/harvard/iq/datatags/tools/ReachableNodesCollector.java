@@ -2,6 +2,7 @@ package edu.harvard.iq.datatags.tools;
 
 import edu.harvard.iq.datatags.model.graphs.nodes.AskNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.CallNode;
+import edu.harvard.iq.datatags.model.graphs.nodes.MultiNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.EndNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.Node;
 import edu.harvard.iq.datatags.model.graphs.nodes.RejectNode;
@@ -33,6 +34,14 @@ public class ReachableNodesCollector extends Node.VoidVisitor {
         }
     }
 
+    @Override
+    public void visitImpl(MultiNode nd) throws DataTagsRuntimeException {
+        collection.add( nd );
+        for ( Answer a : nd.getAnswers() ) {
+            nd.getNodeFor(a).accept(this);
+        }
+    }
+    
     @Override
     public void visitImpl(SetNode nd) throws DataTagsRuntimeException {
         visitThroughNode(nd);

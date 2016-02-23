@@ -1,6 +1,7 @@
 package edu.harvard.iq.datatags.cli;
 
 import edu.harvard.iq.datatags.model.graphs.nodes.AskNode;
+import edu.harvard.iq.datatags.model.graphs.nodes.MultiNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.CallNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.EndNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.Node;
@@ -39,7 +40,26 @@ class VerboseNodePrinter extends Node.VoidVisitor {
         });
         rnr.println();
     }
-
+    
+    @Override
+    public void visitImpl(MultiNode nd) throws DataTagsRuntimeException {
+        rnr.printTitle("Node >%s<: [multi]", nd.getId());
+        rnr.println(nd.getText());
+        if (!nd.getTermNames().isEmpty()) {
+            rnr.println("Terms:");
+            nd.getTermNames().forEach((term) -> {
+                rnr.println(term + ":");
+                rnr.println("\t" + nd.getTermText(term));
+            });
+        }
+        rnr.println("Answers: ");
+        nd.getAnswers().forEach((a) -> {
+            rnr.print(a.getAnswerText());
+            rnr.println(" -> >%s<", nd.getNodeFor(a).getId());
+        });
+        rnr.println();
+    }
+    
     @Override
     public void visitImpl(SetNode nd) throws DataTagsRuntimeException {
         rnr.printTitle("Node >%s<: [set]", nd.getId());

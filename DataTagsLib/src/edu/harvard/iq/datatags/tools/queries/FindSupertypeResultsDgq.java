@@ -3,6 +3,7 @@ package edu.harvard.iq.datatags.tools.queries;
 import edu.harvard.iq.datatags.model.graphs.Answer;
 import edu.harvard.iq.datatags.model.graphs.DecisionGraph;
 import edu.harvard.iq.datatags.model.graphs.nodes.AskNode;
+import edu.harvard.iq.datatags.model.graphs.nodes.MultiNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.CallNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.EndNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.Node;
@@ -73,6 +74,19 @@ public class FindSupertypeResultsDgq implements DecisionGraphQuery {
             currentTrace.removeLast();
         }
 
+        @Override
+        public void visitImpl(MultiNode nd) throws DataTagsRuntimeException {
+            currentTrace.addLast( nd );
+            nd.getAnswers().forEach( ans -> {
+                currentAnswers.addLast(ans);
+                // process answer nodes
+                nd.getNodeFor(ans).accept(this);
+                
+                currentAnswers.removeLast();
+            });
+            currentTrace.removeLast();
+        }
+        
         @Override
         public void visitImpl(SetNode nd) throws DataTagsRuntimeException {
             currentTrace.addLast(nd);

@@ -13,6 +13,7 @@ public abstract class Node {
 	
 	public interface Visitor<R> {
 		R visit( AskNode nd ) throws DataTagsRuntimeException;
+                R visit( MultiNode nd ) throws DataTagsRuntimeException;
 		R visit( SetNode nd ) throws DataTagsRuntimeException;
 		R visit( RejectNode nd ) throws DataTagsRuntimeException;
 		R visit( CallNode nd ) throws DataTagsRuntimeException;
@@ -27,7 +28,13 @@ public abstract class Node {
             visitImpl(nd);
             return null;
         }
-
+        
+        @Override
+        public Void visit(MultiNode nd) throws DataTagsRuntimeException {
+            visitImpl(nd);
+            return null;
+        }
+        
         @Override
         public Void visit(SetNode nd) throws DataTagsRuntimeException {
             visitImpl(nd);
@@ -59,6 +66,7 @@ public abstract class Node {
         }
 
         public abstract void visitImpl( AskNode nd    ) throws DataTagsRuntimeException;
+        public abstract void visitImpl( MultiNode nd  ) throws DataTagsRuntimeException;
         public abstract void visitImpl( SetNode nd    ) throws DataTagsRuntimeException;
         public abstract void visitImpl( RejectNode nd ) throws DataTagsRuntimeException;
         public abstract void visitImpl( CallNode nd   ) throws DataTagsRuntimeException;

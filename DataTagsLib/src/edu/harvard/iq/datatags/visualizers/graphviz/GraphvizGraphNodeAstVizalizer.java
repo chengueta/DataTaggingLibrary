@@ -3,6 +3,7 @@ package edu.harvard.iq.datatags.visualizers.graphviz;
 import edu.harvard.iq.datatags.parser.decisiongraph.AstNodeIdProvider;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstAnswerSubNode;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstAskNode;
+import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstMultiNode;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstCallNode;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstEndNode;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstNode;
@@ -198,6 +199,12 @@ public class GraphvizGraphNodeAstVizalizer extends GraphvizVisualizer {
          AstNode.NullVisitor idSupplier = new AstNode.NullVisitor() {
             @Override
             public void visitImpl(AstAskNode nd) throws DataTagsRuntimeException {
+                if ( nd.getId() == null ) nd.setId( nodeIdProvider.nextId() );
+                nd.getAnswers().forEach( ans -> addIds( ans.getSubGraph(), nodeIdProvider) );
+            }
+            
+            @Override
+            public void visitImpl(AstMultiNode nd) throws DataTagsRuntimeException {
                 if ( nd.getId() == null ) nd.setId( nodeIdProvider.nextId() );
                 nd.getAnswers().forEach( ans -> addIds( ans.getSubGraph(), nodeIdProvider) );
             }

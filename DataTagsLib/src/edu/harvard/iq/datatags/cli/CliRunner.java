@@ -3,6 +3,7 @@ package edu.harvard.iq.datatags.cli;
 import edu.harvard.iq.datatags.io.StringMapFormat;
 import edu.harvard.iq.datatags.model.graphs.DecisionGraph;
 import edu.harvard.iq.datatags.model.graphs.nodes.AskNode;
+import edu.harvard.iq.datatags.model.graphs.nodes.MultiNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.CallNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.EndNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.Node;
@@ -444,6 +445,9 @@ public class CliRunner {
 
                 @Override
                 public void visitImpl(AskNode nd) throws DataTagsRuntimeException {
+                }
+                @Override
+                public void visitImpl(MultiNode nd) throws DataTagsRuntimeException {
                 }
 
                 @Override

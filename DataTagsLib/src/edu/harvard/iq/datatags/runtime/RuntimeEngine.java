@@ -5,6 +5,7 @@ import edu.harvard.iq.datatags.model.graphs.nodes.EndNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.TodoNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.SetNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.CallNode;
+import edu.harvard.iq.datatags.model.graphs.nodes.MultiNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.AskNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.Node;
 import edu.harvard.iq.datatags.model.graphs.DecisionGraph;
@@ -60,6 +61,12 @@ public class RuntimeEngine {
 			return null;
 		}
 		
+                @Override
+		public Node visit( MultiNode nd ) {
+			// stop and consult the user.
+			return null;
+		}
+                
 		@Override
 		public Node visit( TodoNode nd ) {
 			// Skip!

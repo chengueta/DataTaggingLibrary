@@ -2,6 +2,7 @@ package edu.harvard.iq.datatags.tools;
 
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstAnswerSubNode;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstAskNode;
+import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstMultiNode;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstCallNode;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstEndNode;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstNode;
@@ -46,7 +47,21 @@ public class RepeatIdValidator extends NullVisitor {
             }
         }
     }
-
+    
+    @Override
+    public void visitImpl(AstMultiNode nd) throws DataTagsRuntimeException {
+        if (seenIds.contains(nd.getId()) && nd.getId() != null) {
+                validationMessages.put( nd.getId(), new ValidationMessage(Level.ERROR, "Duplicate node id: \"" + nd.getId() + "\"."));
+        } else {
+            seenIds.add(nd.getId());
+        }
+        for (AstAnswerSubNode ansRef : nd.getAnswers()) {
+            for (AstNode node : ansRef.getSubGraph()) {
+                node.accept(this);
+            }
+        }
+    }
+    
     @Override
     public void visitImpl(AstSetNode nd) throws DataTagsRuntimeException {
         if (seenIds.contains(nd.getId()) && nd.getId() != null) {

@@ -2,6 +2,7 @@ package edu.harvard.iq.datatags.tools;
 
 import edu.harvard.iq.datatags.model.graphs.DecisionGraph;
 import edu.harvard.iq.datatags.model.graphs.nodes.AskNode;
+import edu.harvard.iq.datatags.model.graphs.nodes.MultiNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.CallNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.EndNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.Node;
@@ -44,6 +45,11 @@ public class ValidCallNodeValidator extends VoidVisitor {
     
     @Override
     public void visitImpl (AskNode cn) throws DataTagsRuntimeException {
+        // do nothing
+    }
+    
+    @Override
+    public void visitImpl (MultiNode cn) throws DataTagsRuntimeException {
         // do nothing
     }
     

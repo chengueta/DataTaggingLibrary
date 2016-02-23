@@ -13,6 +13,7 @@ public abstract class AstNode {
     
 	public interface Visitor<T> {
 		T visit( AstAskNode    astNode );
+                T visit( AstMultiNode    astNode );
 		T visit( AstCallNode   astNode );
 		T visit( AstEndNode    astNode );
 		T visit( AstSetNode    astNode );
@@ -27,7 +28,13 @@ public abstract class AstNode {
             visitImpl(nd);
             return null;
         }
-
+        
+        @Override
+        public Void visit(AstMultiNode nd) throws DataTagsRuntimeException {
+            visitImpl(nd);
+            return null;
+        }
+        
         @Override
         public Void visit(AstSetNode nd) throws DataTagsRuntimeException {
             visitImpl(nd);
@@ -59,6 +66,7 @@ public abstract class AstNode {
         }
 
         public abstract void visitImpl( AstAskNode    nd ) throws DataTagsRuntimeException;
+        public abstract void visitImpl( AstMultiNode    nd ) throws DataTagsRuntimeException;
         public abstract void visitImpl( AstSetNode    nd ) throws DataTagsRuntimeException;
         public abstract void visitImpl( AstRejectNode nd ) throws DataTagsRuntimeException;
         public abstract void visitImpl( AstCallNode   nd ) throws DataTagsRuntimeException;

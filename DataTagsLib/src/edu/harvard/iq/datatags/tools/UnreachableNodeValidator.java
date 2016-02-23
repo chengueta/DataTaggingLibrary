@@ -3,6 +3,7 @@ package edu.harvard.iq.datatags.tools;
 
 import edu.harvard.iq.datatags.model.graphs.DecisionGraph;
 import edu.harvard.iq.datatags.model.graphs.nodes.AskNode;
+import edu.harvard.iq.datatags.model.graphs.nodes.MultiNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.CallNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.EndNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.Node.VoidVisitor;
@@ -58,6 +59,18 @@ public class UnreachableNodeValidator extends VoidVisitor {
      */
     @Override
     public void visitImpl(AskNode nd) throws DataTagsRuntimeException {
+        if (!reachedNodeIds.contains(nd.getId())) {
+            reachedNodeIds.add(nd.getId());
+        }
+        for (Answer answer : nd.getAnswers()) {
+            if (!reachedNodeIds.contains(nd.getNodeFor(answer).getId())) {
+                nd.getNodeFor(answer).accept(this);
+            }
+        }
+    }
+    
+    @Override
+    public void visitImpl(MultiNode nd) throws DataTagsRuntimeException {
         if (!reachedNodeIds.contains(nd.getId())) {
             reachedNodeIds.add(nd.getId());
         }

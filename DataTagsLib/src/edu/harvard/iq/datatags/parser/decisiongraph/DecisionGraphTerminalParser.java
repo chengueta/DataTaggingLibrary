@@ -33,7 +33,7 @@ public class DecisionGraphTerminalParser {
     static final String NODE_TEXT_TERMINATORS = ":]}";
     static final List<String> NODE_STRUCTURE_TOKENS = Arrays.asList( "/", "+=","=", ",", ";",
             "[", ":", "{", "}", "]",
-            "ask","set","end","reject","call","todo",
+            "ask","set","end","reject","call","todo","multi",
             "text", "terms", "answers");
     static final Terminals NODE_STRUCTURE_TERMINALS = Terminals.operators(NODE_STRUCTURE_TOKENS);
    

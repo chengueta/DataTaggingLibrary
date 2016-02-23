@@ -2,6 +2,7 @@ package edu.harvard.iq.datatags.parser.decisiongraph;
 
 import edu.harvard.iq.datatags.model.graphs.DecisionGraph;
 import edu.harvard.iq.datatags.model.graphs.nodes.AskNode;
+import edu.harvard.iq.datatags.model.graphs.nodes.MultiNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.CallNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.EndNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.Node;
@@ -19,6 +20,7 @@ import edu.harvard.iq.datatags.model.types.TagValueLookupResult;
 import edu.harvard.iq.datatags.model.values.AtomicValue;
 import edu.harvard.iq.datatags.model.values.CompoundValue;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstAskNode;
+import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstMultiNode;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstCallNode;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstEndNode;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstNode;
@@ -122,6 +124,9 @@ public class DecisionGraphParseResult {
             public Boolean visit(AstAskNode astNode) { return false; }
 
             @Override
+            public Boolean visit(AstMultiNode astNode) { return false; }
+            
+            @Override
             public Boolean visit(AstCallNode astNode) { return false; }
 
             @Override
@@ -185,6 +190,24 @@ public class DecisionGraphParseResult {
                     return product.add( res );
                 }
 
+                @Override
+                public Node visit(AstMultiNode astNode) {
+                    MultiNode res = new MultiNode(astNode.getId());
+                    res.setText(astNode.getTextNode().getText());
+                    if ( astNode.getTerms() != null ) {
+                        astNode.getTerms().forEach(t -> res.addTerm(t.getTerm(), t.getExplanation()));
+                    }
+                    
+                    Node syntacticallyNext = buildNodes(C.tail(astNodes), defaultNode );
+                    
+                    astNode.getAnswers().forEach( ansSubNode -> res.setNodeFor( Answer.get(ansSubNode.getAnswerText()), 
+                                                                                buildNodes(ansSubNode.getSubGraph(), syntacticallyNext) ) );
+                    
+                    impliedAnswers(res).forEach( ans -> res.setNodeFor(ans, syntacticallyNext) ); 
+
+                    return product.add( res );
+                }
+                
                 @Override
                 public Node visit(AstCallNode astNode) {
                     CallNode callNode = new CallNode(astNode.getId());
@@ -344,6 +367,20 @@ public class DecisionGraphParseResult {
 			default: return Collections.emptyList();	
 		}
 	}
+    
+    List<Answer> impliedAnswers( MultiNode node ) {
+		List<Answer> answers = node.getAnswers();
+		if ( answers.size() > 1 ) return Collections.emptyList();
+		if ( answers.isEmpty() ) return Arrays.asList( Answer.NO, Answer.YES ); // special case, where both YES and NO lead to the same options. 
+		Answer onlyAns = answers.iterator().next();
+
+        String ansText = onlyAns.getAnswerText().trim().toLowerCase();
+		switch( ansText ) {
+			case "yes": return Collections.singletonList( Answer.NO );
+			case "no" : return Collections.singletonList( Answer.YES );
+			default: return Collections.emptyList();	
+		}
+	}
 
     /**
      * Ensures that all nodes have ids. Generates ids if needed.
@@ -356,7 +393,13 @@ public class DecisionGraphParseResult {
                 if ( nd.getId() == null ) nd.setId( nodeIdProvider.nextId() );
                 nd.getAnswers().forEach( ans -> addIds( ans.getSubGraph()) );
             }
-
+            
+            @Override
+            public void visitImpl(AstMultiNode nd) throws DataTagsRuntimeException {
+                if ( nd.getId() == null ) nd.setId( nodeIdProvider.nextId() );
+                nd.getAnswers().forEach( ans -> addIds( ans.getSubGraph()) );
+            }
+            
             @Override
             public void visitImpl(AstSetNode nd) throws DataTagsRuntimeException {
                 if ( nd.getId() == null ) nd.setId( nodeIdProvider.nextId() );

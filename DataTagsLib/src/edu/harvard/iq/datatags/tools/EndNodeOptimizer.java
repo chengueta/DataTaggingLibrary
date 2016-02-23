@@ -1,6 +1,7 @@
 package edu.harvard.iq.datatags.tools;
 
 import edu.harvard.iq.datatags.model.graphs.DecisionGraph;
+import edu.harvard.iq.datatags.model.graphs.nodes.MultiNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.AskNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.CallNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.EndNode;
@@ -39,6 +40,17 @@ public class EndNodeOptimizer implements FlowChartOptimizer {
 
             @Override
             public void visitImpl(AskNode nd) throws DataTagsRuntimeException {
+                for ( Answer a : nd.getAnswers() ) {
+                    Node ansNode = nd.getNodeFor(a);
+                    if ( shouldReplace(ansNode) ) {
+                        fcs.remove(ansNode);
+                        nd.setNodeFor(a, end);
+                    }
+                }
+            }
+            
+            @Override
+            public void visitImpl(MultiNode nd) throws DataTagsRuntimeException {
                 for ( Answer a : nd.getAnswers() ) {
                     Node ansNode = nd.getNodeFor(a);
                     if ( shouldReplace(ansNode) ) {

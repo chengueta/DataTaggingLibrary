@@ -2,6 +2,7 @@ package edu.harvard.iq.datatags.tools;
 
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstAnswerSubNode;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstAskNode;
+import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstMultiNode;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstCallNode;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstEndNode;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstNode;
@@ -45,7 +46,24 @@ public class DuplicateNodeAnswerValidator extends NullVisitor{
             noduplicates.add(ansRef);
         }
     }
-
+    
+    @Override
+    public void visitImpl(AstMultiNode nd) throws DataTagsRuntimeException {
+        List<AstAnswerSubNode> noduplicates = new LinkedList<>();
+        for (AstAnswerSubNode ansRef : nd.getAnswers()) {
+            for (AstNode implementation: ansRef.getSubGraph()) {
+                implementation.accept(this); // descend through the questionnaire structure
+            }
+            for (AstAnswerSubNode ans : noduplicates) {
+                // compare answer text, since we don't want two no answers that have different implementations
+                if (ansRef.getAnswerText().equals(ans.getAnswerText())) {
+                    validationMessages.add(new ValidationMessage(Level.WARNING, "Ask node \"" + nd.getId() + "\" has duplicate answers"));
+                }
+            }
+            noduplicates.add(ansRef);
+        }
+    }
+    
     @Override
     public void visitImpl(AstSetNode nd) throws DataTagsRuntimeException {
         // do nothing unless node ref is an AskNodeRef

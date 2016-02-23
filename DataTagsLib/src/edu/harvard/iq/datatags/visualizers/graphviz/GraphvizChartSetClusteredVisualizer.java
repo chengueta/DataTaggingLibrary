@@ -2,6 +2,7 @@ package edu.harvard.iq.datatags.visualizers.graphviz;
 
 import edu.harvard.iq.datatags.model.graphs.DecisionGraph;
 import edu.harvard.iq.datatags.model.graphs.nodes.AskNode;
+import edu.harvard.iq.datatags.model.graphs.nodes.MultiNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.CallNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.EndNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.Node;
@@ -98,6 +99,15 @@ public class GraphvizChartSetClusteredVisualizer extends GraphvizVisualizer {
                             answerNode.accept(this);
                         }
                     }
+                    
+                    @Override
+                    public void visitImpl(MultiNode nd) throws DataTagsRuntimeException {
+                        for ( Answer n : nd.getAnswers() ) {
+                            Node answerNode = nd.getNodeFor(n);
+                            candidates.remove(answerNode);
+                            answerNode.accept(this);
+                        }
+                    }
 
                     @Override
                     public void visitImpl(SetNode nd) throws DataTagsRuntimeException {
@@ -155,6 +165,22 @@ public class GraphvizChartSetClusteredVisualizer extends GraphvizVisualizer {
 			}
 		}
 
+                @Override
+		public void visitImpl(MultiNode nd) throws DataTagsRuntimeException {
+            String nodeText = nd.getText();
+            if ( nodeText.length() > 140 ) {
+                nodeText = nodeText.substring(0,140) + "...";
+            }
+			nodes.add( node(nodeId(nd))
+					.shape(GvNode.Shape.oval)
+					.label( idLabel(nd) + "ask\n" + wrap(nodeText) )
+					.gv());
+			for ( Answer ans : nd.getAnswers() ) {
+				edges.add( edge(nodeId(nd), nodeId(nd.getNodeFor(ans))).tailLabel(ans.getAnswerText()).gv() );
+                targets.add( nd.getNodeFor(ans));
+			}
+		}
+                
 		@Override
 		public void visitImpl(CallNode nd) throws DataTagsRuntimeException {
 			nodes.add( node(nodeId(nd))

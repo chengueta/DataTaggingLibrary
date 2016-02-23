@@ -6,6 +6,7 @@ import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstAnswerSubNode;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstAskNode;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstCallNode;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstEndNode;
+import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstMultiNode;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstNode;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstNodeHead;
 import edu.harvard.iq.datatags.parser.decisiongraph.ast.AstRejectNode;
@@ -172,7 +173,21 @@ public class DecisionGraphRuleParser {
                 answersSubNode(bodyParser),
                 nodeStructurePart("]"),
                 ( head, text, terms, answers, _e) -> new AstAskNode( head.getId(), text, terms, answers ));
-    }       
+    }  
+    
+    final static Parser<AstMultiNode> multiNode( Parser<List<? extends AstNode>> bodyParser ) {
+        return Parsers.sequence(
+                Parsers.sequence(
+                        nodeStructurePart("["),
+                        nodeHead("multi"),
+                        nodeStructurePart(":"),
+                        (_s, h, _c) -> h ),
+                TEXT_SUBNODE,
+                TERMS_SUBNODE.optional(),
+                answersSubNode(bodyParser),
+                nodeStructurePart("]"),
+                ( head, text, terms, answers, _e) -> new AstMultiNode( head.getId(), text, terms, answers ));
+    } 
     
     
     // -------------------------------

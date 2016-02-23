@@ -1,6 +1,7 @@
 package edu.harvard.iq.datatags.model.graphs;
 
 import edu.harvard.iq.datatags.model.graphs.nodes.AskNode;
+import edu.harvard.iq.datatags.model.graphs.nodes.MultiNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.CallNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.EndNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.Node;
@@ -90,7 +91,17 @@ public class DecisionGraph {
                     }
                 }
             }
-
+            
+            @Override
+            public void visitImpl(MultiNode nd) throws DataTagsRuntimeException {
+                nodes.put(nd.getId(), nd);
+                for (Answer ans : nd.getAnswers()) {
+                    if (nd.getNodeFor(ans) != null) {
+                        nd.getNodeFor(ans).accept(this);
+                    }
+                }
+            }
+            
             @Override
             public void visitImpl(SetNode nd) throws DataTagsRuntimeException {
                 nodes.put(nd.getId(), nd);
