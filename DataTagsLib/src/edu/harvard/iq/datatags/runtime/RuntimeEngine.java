@@ -51,6 +51,10 @@ public class RuntimeEngine {
 	private DecisionGraph decisionGraph;
     
 	private CompoundValue currentTags;
+        // TODO: change to support Frame
+        // CallFrame extends Frame, has a CallNode
+        // MultiAskFrame: extends Frame, has a MultiAskNode, and list of selected answers
+        // Change behavior of VisitEnd
 	private final Deque<CallNode> stack = new LinkedList<>();
 	private Node currentNode;
 	private RuntimeEngineStatus status = RuntimeEngineStatus.Idle;
@@ -66,7 +70,7 @@ public class RuntimeEngine {
 		
                 @Override
 		public Node visit( MultiNode nd ) {
-			// stop and consult the user.
+			
 			return null;
 		}
                 
@@ -110,11 +114,14 @@ public class RuntimeEngine {
 
 		@Override
 		public Node visit( EndNode nd ) throws DataTagsRuntimeException {
+                    
 			if ( stack.isEmpty() ) {
 				setStatus(RuntimeEngineStatus.Accept);
 				return null;
 			} else {
+                            
 				return stack.pop().getNextNode();
+                            
 			}
 		}
 	};
@@ -163,12 +170,12 @@ public class RuntimeEngine {
         currentTags = null;
     }
     
-	protected boolean processNode( Node n ) throws DataTagsRuntimeException {
+	public boolean processNode( Node n ) throws DataTagsRuntimeException {
 		Node next = n;
 		do {
 			currentNode = next; // advance program counter
-                        System.out.println("next="+next.toString());
 			next = currentNode.accept(processNodeVisitor);
+                       
 			listener.ifPresent( l-> l.processedNode(this, getCurrentNode()) );
                         
 		} while ( next != null );
@@ -191,23 +198,14 @@ public class RuntimeEngine {
 		return processNode( next );
 	}
             else {
-                
-                return (consumeAllMulti(ans.getAnswersForMulti()));
+                MultiNode current = (MultiNode) currentNode;
+		Node next = current.getNodeFor(ans);
+		return processNode( next );
             }
         
         }
         
-        public boolean consumeAllMulti( List<Integer> ansLst ) throws DataTagsRuntimeException {
-		MultiNode current = (MultiNode) currentNode;
-		boolean res = true;
-                for (int i=0;i< ansLst.size();i++){
-                Answer ans = (current.getAnsAt(ansLst.get(i)-1));
-			res = processNode(current.getNodeFor(ans));
-                        System.out.println("res="+res+" current: "+current.toString());
-			if ( ! res && (i==ansLst.size()-1) ) return false;
-		}
-		return res;
-	}
+        
 	
     public RuntimeEngineState createSnapshot() {
         final RuntimeEngineState state = new RuntimeEngineState();

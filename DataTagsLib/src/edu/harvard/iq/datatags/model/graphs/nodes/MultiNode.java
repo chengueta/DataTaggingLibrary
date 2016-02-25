@@ -2,6 +2,7 @@ package edu.harvard.iq.datatags.model.graphs.nodes;
 
 import edu.harvard.iq.datatags.model.graphs.Answer;
 import edu.harvard.iq.datatags.runtime.exceptions.DataTagsRuntimeException;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,14 +21,38 @@ public class MultiNode extends Node {
 	private final Map<Answer, Node> nextNodeByAnswer = new HashMap<>();
 	private final Map<String, String> terms = new HashMap<>();
 	private String text;
-	
+	private final Deque<Node> stackMulti = new LinkedList<>();
 
 	public MultiNode(String id) {
 		super(id);
 	}
 	
+        public Deque<Node> getMultiStack (){
+            return this.stackMulti;
+        }
         
+        public Node popMulti (){
+           return this.stackMulti.pop();
+        }
        
+        public void pushMulti (Answer ans){
+          this.stackMulti.push(getNodeFor(ans));
+        }
+        
+        public Node peekMulti (){
+           return this.stackMulti.peek();
+        }
+        
+        public void setMultiStack (List<Integer> ansNum){
+            for (int i=ansNum.size()-1;i>=0;i--){
+                this.pushMulti(answers.get(ansNum.get(i)-1));
+            }
+        }
+        
+        public boolean isMultiStackEmpty (){
+            return this.stackMulti.isEmpty();
+        }
+        
 	@Override
 	public <R> R accept(Node.Visitor<R> vr) throws DataTagsRuntimeException {
 		return vr.visit(this);

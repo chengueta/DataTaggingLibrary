@@ -2,7 +2,7 @@
   {text: which side do you want?}
   {answers:
     {1. rice:   [set: Side+=rice]}
-    {2. corn: [set: Side+=corn]}
+    {2. corn: [set: Side+=corn] [call: test]}
     {3. guacamole: [set: Side+=guacamole]}
     {4. cream: [set: Side+=cream][call: drinks]}
     {5. cheese: [set: Side+=cheese]  }
@@ -10,22 +10,55 @@
 ]
 
 [>default-main< set: Main=chicken] <-- default
+[ask: 
+{text: choose your napkin color:}
+{answers:
+      {blue: [set:Color=blue][call:silverWear]}
+      {yellow: [set:Color=yellow]}
+      {green: [set:Color=green]}
+      {red: [set:Color=red]}
+      {white: [set:Color=white]}
+      {black: [set:Color=black]}
+          }]
+          
 
+[>silverWear< multi:
+  {text :choose what you want}
+    {answers: 
+    {1. fork: [set: SilverWear+=fork]}
+    {2. knife: [set: SilverWear+=knife]}
+    {3. spoon: [set: SilverWear+=spoon]}
+
+
+    } ] 
+
+
+
+[end]
  [>test< multi:
                       {text: which bags do you want?}
                         {answers:
-                          {1. plastic: [set: Bag+=plastic]}
+                          {1. plastic: [set: Bag+=plastic] [call: wrap]}
                           {2. paper: [set: Bag+=paper]}
                           {3. banana_leaf: [set: Bag+=banana_leaf]}
                           }]
-                          [end]
+                          
+[end] <-- main
+
 
 [>drinks< ask:
   {text: what do you want to drink? }
   {answers:
-    {coke: [set: Drink+=coke]}
+    {coke: [set: Drink+=coke] [call: wrap]}
     {fanta: [set: Drink+=fanta]}
     {sprite: [set: Drink+=sprite]}
   }
 ][end]
 
+[>wrap< ask:
+{text: which wrap do you want?}
+{answers:
+{corn: [set: Wrap+=corn] }
+{full_grain: [set: Wrap+=full_grain]}
+{wheat:[set: Wrap+=wheat] }}
+]

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -117,9 +118,40 @@ public class CliRunner {
             while (true) {
                 try {
                     if (ngn.getStatus() == RuntimeEngineStatus.Idle && ngn.start()) {
-                        while (ngn.getStatus() == RuntimeEngineStatus.Running
-                                && ngn.consume(promptUserForAnswer())) {
+                        while (ngn.getStatus() == RuntimeEngineStatus.Running) {
+                            if (ngn.getCurrentNode() instanceof AskNode && ngn.consume(promptUserForAnswer())){
                             println("");
+                            }
+                            if (ngn.getCurrentNode() instanceof MultiNode){
+                                promptUserForAnswer();
+                                
+                                Deque<Node> temp =((MultiNode)ngn.getCurrentNode()).getMultiStack();
+                                while(!temp.isEmpty()){
+                                    
+                                   /* System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! peek::"+temp.peek());
+                                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! current: "+ngn.getCurrentNode());*/
+                                    ngn.processNode(temp.pop());
+                                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! current: "+ngn.getCurrentNode());
+                                   if (ngn.getCurrentNode() instanceof AskNode){
+                                       Answer ans= promptUserForAnswer();
+                                       temp.push(((AskNode)ngn.getCurrentNode()).getNodeFor(ans));
+                                      println("") ;
+                                   }
+                                   if (ngn.getCurrentNode() instanceof MultiNode){
+                                       
+                                      Answer ans= promptUserForAnswer();
+                                      while (!((MultiNode)ngn.getCurrentNode()).getMultiStack().isEmpty()){
+                                          temp.push(((MultiNode)ngn.getCurrentNode()).getMultiStack().pollLast());
+                                      }
+                                      
+                                      println("") ;
+                                   }
+                                   
+                                }
+                                System.out.println("!!!!!!!!!!!!!!!!!STATUS!!!!!!!!!!!!!!!"+ngn.getStatus());
+                                System.out.println("!!!!!!!!!!!!!!!!!STATUS!!!!!!!!!!!!!!!"+RuntimeEngineStatus.Running);
+                            }
+                            
                         }
                     }
                     promptForCommand();
@@ -167,9 +199,9 @@ public class CliRunner {
                     && (((AskNode) ngn.getCurrentNode()).getAnswers().contains(ans))) {
                 return ans;
             } 
-            else if (ngn.getCurrentNode() instanceof MultiNode){
+            else if (ngn.getCurrentNode() instanceof MultiNode && (!ans.getAnswerText().equals("?"))){
                 List<Integer> ansNum = ans.getAnswersForMulti();
-                
+                ((MultiNode)ngn.getCurrentNode()).setMultiStack(ansNum);
                 for (int i=0;i<ansNum.size(); i++){
                     
                     if (((MultiNode) ngn.getCurrentNode()).getAnswers().size()<ansNum.get(i)){
