@@ -201,8 +201,6 @@ public class RuntimeEngine {
 		MultiNode current = (MultiNode) currentNode;
 		boolean res = true;
                 for (int i=0;i< ansLst.size();i++){
-                    
-		
                 Answer ans = (current.getAnsAt(ansLst.get(i)-1));
 			res = processNode(current.getNodeFor(ans));
                         System.out.println("res="+res+" current: "+current.toString());
