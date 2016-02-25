@@ -175,7 +175,6 @@ public class RuntimeEngine {
 		do {
 			currentNode = next; // advance program counter
 			next = currentNode.accept(processNodeVisitor);
-                       
 			listener.ifPresent( l-> l.processedNode(this, getCurrentNode()) );
                         
 		} while ( next != null );

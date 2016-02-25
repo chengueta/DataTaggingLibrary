@@ -130,8 +130,10 @@ public class CliRunner {
                                     
                                    /* System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! peek::"+temp.peek());
                                     System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! current: "+ngn.getCurrentNode());*/
-                                    ngn.processNode(temp.pop());
-                                    System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! current: "+ngn.getCurrentNode());
+                                    /*Node currNode =temp.pop();*/
+                                    
+                                   ngn.processNode(temp.pop());
+                                    /*System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! current: "+ngn.getCurrentNode());*/
                                    if (ngn.getCurrentNode() instanceof AskNode){
                                        Answer ans= promptUserForAnswer();
                                        temp.push(((AskNode)ngn.getCurrentNode()).getNodeFor(ans));
@@ -139,7 +141,7 @@ public class CliRunner {
                                    }
                                    if (ngn.getCurrentNode() instanceof MultiNode){
                                        
-                                      Answer ans= promptUserForAnswer();
+                                       promptUserForAnswer();
                                       while (!((MultiNode)ngn.getCurrentNode()).getMultiStack().isEmpty()){
                                           temp.push(((MultiNode)ngn.getCurrentNode()).getMultiStack().pollLast());
                                       }
@@ -147,9 +149,9 @@ public class CliRunner {
                                       println("") ;
                                    }
                                    
+                                
+                                    
                                 }
-                                System.out.println("!!!!!!!!!!!!!!!!!STATUS!!!!!!!!!!!!!!!"+ngn.getStatus());
-                                System.out.println("!!!!!!!!!!!!!!!!!STATUS!!!!!!!!!!!!!!!"+RuntimeEngineStatus.Running);
                             }
                             
                         }
@@ -239,6 +241,60 @@ public class CliRunner {
         
     }
     
+    
+    /*Answer promptUserForAnswer(Node node) throws IOException {
+        printCurrentAskOrMultiNode();
+
+        String ansText;
+        while ((ansText = readLine("answer (? for help): ")) != null) {
+            ansText = ansText.trim();
+            if ( ansText.isEmpty() ) continue;
+            
+            Answer ans = Answer.Answer(ansText);
+            
+            if ((node instanceof AskNode)
+                    && (((AskNode) node).getAnswers().contains(ans))) {
+                return ans;
+            } 
+            else if (node instanceof MultiNode && (!ans.getAnswerText().equals("?"))){
+                List<Integer> ansNum = ans.getAnswersForMulti();
+                ((MultiNode)node).setMultiStack(ansNum);
+                for (int i=0;i<ansNum.size(); i++){
+                    
+                    if (((MultiNode) node).getAnswers().size()<ansNum.get(i)){
+                        printMsg("Sorry, '%s' is not a valid answer. Please try again.", ansNum.get(i).toString());
+                        break;
+                    }
+                    if (i==ansNum.size()-1){
+                        return ans;
+                    }
+                }
+                
+            }
+            else if (ansText.equals("?")) {
+                printHelp();
+
+            } else if (ansText.startsWith("\\")) {
+                try {
+                    List<String> args = cmdScanner.parse( ansText );
+                    String commandString = args.get(0).substring(1);
+                    commandString = shortcuts.getOrDefault(commandString, commandString);
+                    commands.getOrDefault(commandString, COMMAND_NOT_FOUND).execute(this, args);
+                    println("");
+
+                } catch (Exception ex) {
+                    Logger.getLogger(CliRunner.class.getName()).log(Level.SEVERE, "Error executing command: " + ex.getMessage(), ex);
+                }
+
+            } else {
+                printMsg("Sorry, '%s' is not a valid answer. Please try again.", ansText);
+            }
+        }
+
+        return null;
+    
+        
+    }*/
     /**
      * Prompts the user for a command, and then executes it. If the command
      * entails restarting the engine, it is conveyed by it changing the engine

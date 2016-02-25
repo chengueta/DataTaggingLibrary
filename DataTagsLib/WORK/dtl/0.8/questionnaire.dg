@@ -1,11 +1,11 @@
 [multi:
   {text: which side do you want?}
   {answers:
-    {1. rice:   [set: Side+=rice]}
-    {2. corn: [set: Side+=corn] [call: test]}
-    {3. guacamole: [set: Side+=guacamole]}
-    {4. cream: [set: Side+=cream][call: drinks]}
-    {5. cheese: [set: Side+=cheese]  }
+    {1. rice:   [set: Side+=rice][end]}
+    {2. corn: [set: Side+=corn] [call: test][end]}
+    {3. guacamole: [set: Side+=guacamole][end]}
+    {4. cream: [set: Side+=cream][call: drinks][end]}
+    {5. cheese: [set: Side+=cheese]  [end]}
   }
 ]
 
@@ -25,9 +25,9 @@
 [>silverWear< multi:
   {text :choose what you want}
     {answers: 
-    {1. fork: [set: SilverWear+=fork]}
-    {2. knife: [set: SilverWear+=knife]}
-    {3. spoon: [set: SilverWear+=spoon]}
+    {1. fork: [set: SilverWear+=fork][end]}
+    {2. knife: [set: SilverWear+=knife][end]}
+    {3. spoon: [set: SilverWear+=spoon][end]}
 
 
     } ] 
@@ -38,9 +38,9 @@
  [>test< multi:
                       {text: which bags do you want?}
                         {answers:
-                          {1. plastic: [set: Bag+=plastic] [call: wrap]}
-                          {2. paper: [set: Bag+=paper]}
-                          {3. banana_leaf: [set: Bag+=banana_leaf]}
+                          {1. plastic: [set: Bag+=plastic] [call: wrap][end]}
+                          {2. paper: [set: Bag+=paper][end]}
+                          {3. banana_leaf: [set: Bag+=banana_leaf][end]}
                           }]
                           
 [end] <-- main
