@@ -154,8 +154,7 @@ public class CliRunner {
     }
 
     Answer promptUserForAnswer() throws IOException {
-
-        printCurrentAskNode();
+        printCurrentAskOrMultiNode();
 
         String ansText;
         while ((ansText = readLine("answer (? for help): ")) != null) {
@@ -163,11 +162,27 @@ public class CliRunner {
             if ( ansText.isEmpty() ) continue;
             
             Answer ans = Answer.Answer(ansText);
+            
             if ((ngn.getCurrentNode() instanceof AskNode)
                     && (((AskNode) ngn.getCurrentNode()).getAnswers().contains(ans))) {
                 return ans;
-
-            } else if (ansText.equals("?")) {
+            } 
+            else if (ngn.getCurrentNode() instanceof MultiNode){
+                List<Integer> ansNum = ans.getAnswersForMulti();
+                
+                for (int i=0;i<ansNum.size(); i++){
+                    
+                    if (((MultiNode) ngn.getCurrentNode()).getAnswers().size()<ansNum.get(i)){
+                        printMsg("Sorry, '%s' is not a valid answer. Please try again.", ansNum.get(i).toString());
+                        break;
+                    }
+                    if (i==ansNum.size()-1){
+                        return ans;
+                    }
+                }
+                
+            }
+            else if (ansText.equals("?")) {
                 printHelp();
 
             } else if (ansText.startsWith("\\")) {
@@ -188,6 +203,8 @@ public class CliRunner {
         }
 
         return null;
+    
+        
     }
     
     /**
@@ -231,7 +248,9 @@ public class CliRunner {
                 .forEach(e -> println("\\%s: %s\n%s", e.getKey(), findShortcut(e.getKey()), indent(e.getValue().description())));
     }
 
-    public void printCurrentAskNode() {
+    public void printCurrentAskOrMultiNode() {
+        if (ngn.getCurrentNode() instanceof AskNode){
+        
         AskNode ask = (AskNode) ngn.getCurrentNode();
         if (printDebugMessages) {
             printMsg("Question id: " + ask.getId());
@@ -246,6 +265,25 @@ public class CliRunner {
         }
         println("Possible Answers:");
         ask.getAnswers().forEach(ans -> println(" - " + ans.getAnswerText()));
+    }
+        else {
+        MultiNode multi = (MultiNode) ngn.getCurrentNode();
+        if (printDebugMessages) {
+            printMsg("Question id: " + multi.getId());
+        }
+        println(multi.getText());
+        if (!multi.getTermNames().isEmpty()) {
+            println(" Terms:");
+            for (String termName : multi.getTermNames()) {
+                print(" * " + termName + ":\n");
+                println("\t" + multi.getTermText(termName));
+            }
+        }
+        println("This Is A Multiple Answer question, Possible Answers:");
+        
+        multi.getAnswers().forEach(ans -> println(" - "  + ans.getAnswerText()));
+        
+        }
     }
 
     void print(String format, Object... args) {

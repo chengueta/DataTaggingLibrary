@@ -1,38 +1,31 @@
-[ask:
-  {text: Are you a vegeterian?}
+[multi:
+  {text: which side do you want?}
   {answers:
-    {yes: [set: Main=tofu] }
-    {no: [>ft< ask:
-      {text: Beef?}
-      {answers:
-        {yes: [set: Main=beef]}
-      }
-    ]}
+    {1. rice: [set: Side+=rice] [call: drinks] [set: Drink+=coke][end] }
+    {2. corn: [set: Side+=corn][end]}
+    {3. guacamole: [set: Side+=guacamole][end]}
+    {4. cream: [set: Side+=cream][end]}
+    {5. cheese: [set: Side+=cheese] [end]}
   }
-]
+][end]
+
 [>default-main< set: Main=chicken] <-- default
-[>sides< ask:
-  {text: Which Offer?}
+
+ [>test< multi:
+                      {text: which bags do you want?}
+                        {answers:
+                          {1. plastic: [set: Bag+=plastic]}
+                          {2. paper: [set: Bag+=paper]}
+                          {3. banana_leaf: [set: Bag+=banana_leaf]}
+                          }]
+                          [end]
+
+[>drinks< ask:
+  {text: what do you want to drink? }
   {answers:
-    {the works:
-      [set: Wrap=wheat; Side+=rice,corn,guacamole,cream,cheese ]
-      [set: Bag=paper]
-    }
-    {minimal:
-      [set: Wrap=full_grain; Side+=rice]
-    }
-    {health nut:
-      [set: Wrap=full_grain; Side+=rice,corn]
-    }
+    {coke: [set: Drink+=coke]}
+    {fanta: [set: Drink+=fanta]}
+    {sprite: [set: Drink+=sprite]}
   }
-]
-<*
-[>extras< ask:
-  {text: How 'bout some extras? }
-  {answers:
-    {ask: [set: Extras=ask]}
-    {set: [set: Extras=set]}
-    {get: [set: Extras=get]}
-  }
-]
-*>
+][end]
+

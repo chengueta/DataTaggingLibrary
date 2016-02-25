@@ -85,7 +85,7 @@ public class LoadQuestionnaireCommand implements CliCommand {
 
                 if ( rnr.getEngine().getStatus() == RuntimeEngineStatus.Running ) {
                     rnr.restart();
-                    rnr.printCurrentAskNode();
+                    rnr.printCurrentAskOrMultiNode();
                 } else {
                     rnr.getEngine().setIdle();
                 }

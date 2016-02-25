@@ -26,7 +26,7 @@ public class RestartCommand implements CliCommand {
         if ( engine.getStatus() == RuntimeEngineStatus.Running ) {
             rnr.restart();
             if ( engine.getStatus() == RuntimeEngineStatus.Running ) {
-                rnr.printCurrentAskNode();
+                rnr.printCurrentAskOrMultiNode();
             }
         } else {
             engine.setIdle();

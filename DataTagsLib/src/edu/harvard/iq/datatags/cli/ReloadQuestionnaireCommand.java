@@ -52,7 +52,7 @@ public class ReloadQuestionnaireCommand implements CliCommand {
             rnr.setDecisionGraph(dg);
             if ( rnr.getEngine().getStatus() == RuntimeEngineStatus.Running ) {
                 rnr.restart();
-                rnr.printCurrentAskNode();
+                rnr.printCurrentAskOrMultiNode();
             } else {
                 rnr.getEngine().setIdle();
             }

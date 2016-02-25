@@ -26,6 +26,8 @@ public class MultiNode extends Node {
 		super(id);
 	}
 	
+        
+       
 	@Override
 	public <R> R accept(Node.Visitor<R> vr) throws DataTagsRuntimeException {
 		return vr.visit(this);
@@ -71,6 +73,9 @@ public class MultiNode extends Node {
     public List<Answer> getAnswers() {
         return answers;
     }
+    public Answer getAnsAt (int i){
+        return answers.get(i);
+    }
     
     @Override
     public String toString() {
@@ -111,5 +116,6 @@ public class MultiNode extends Node {
         return equalsAsNode(other);
     }
     
+   
     
 }

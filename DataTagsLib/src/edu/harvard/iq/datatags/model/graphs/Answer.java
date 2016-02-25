@@ -1,8 +1,12 @@
 package edu.harvard.iq.datatags.model.graphs;
 
 import edu.harvard.iq.datatags.model.graphs.nodes.AskNode;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -66,6 +70,24 @@ public class Answer {
 	public String toString() {
 		return "[Answer answerText:" + answerText + ']';
 	}
+        
+        public List<Integer> getAnswersForMulti (){
+          
+          List<Integer> temp = new LinkedList<Integer>();
+          
+          String answer = this.getAnswerText();
+          StringTokenizer ansToken = new StringTokenizer(answer );
+          int i=0;
+          while (ansToken.hasMoreElements()){
+              temp.add(i, Integer.parseInt(ansToken.nextElement().toString()));
+              i++;
+              
+          }
+            
+            
+          
+          return temp;
+        }
 	
 	
 }

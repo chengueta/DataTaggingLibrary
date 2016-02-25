@@ -196,7 +196,7 @@ public class DecisionGraphRuleParser {
     
     final static Parser<List<? extends AstNode>> graphParser() {
         Parser.Reference<List<? extends AstNode>> nodeListParserRef = Parser.newReference();
-        Parser<? extends AstNode> singleAstNode = Parsers.or( END_NODE, CALL_NODE, TODO_NODE, REJECT_NODE, SET_NODE, askNode(nodeListParserRef.lazy()));
+        Parser<? extends AstNode> singleAstNode = Parsers.or( END_NODE, CALL_NODE, TODO_NODE, REJECT_NODE, SET_NODE, askNode(nodeListParserRef.lazy()),multiNode(nodeListParserRef.lazy()));
         Parser<List<? extends AstNode>> nodeSequence = singleAstNode.many().cast();
         nodeListParserRef.set( nodeSequence );
         

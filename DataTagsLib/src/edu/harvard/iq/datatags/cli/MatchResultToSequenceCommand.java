@@ -3,6 +3,7 @@ package edu.harvard.iq.datatags.cli;
 import edu.harvard.iq.datatags.model.graphs.Answer;
 import edu.harvard.iq.datatags.model.graphs.DecisionGraph;
 import edu.harvard.iq.datatags.model.graphs.nodes.AskNode;
+import edu.harvard.iq.datatags.model.graphs.nodes.MultiNode;
 import edu.harvard.iq.datatags.model.graphs.nodes.Node;
 import edu.harvard.iq.datatags.model.graphs.nodes.SetNode;
 import edu.harvard.iq.datatags.model.types.TagValueLookupResult;
@@ -119,6 +120,9 @@ public class MatchResultToSequenceCommand implements CliCommand {
             Node nd = nodes.next();
             nd.accept(nodePrinter);
             if ( nd instanceof AskNode ) {
+                rnr.println(" -%s->", answers.next().getAnswerText());
+            }
+            if ( nd instanceof MultiNode ) {
                 rnr.println(" -%s->", answers.next().getAnswerText());
             }
         }

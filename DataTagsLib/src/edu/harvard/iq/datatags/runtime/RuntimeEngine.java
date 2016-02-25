@@ -17,8 +17,11 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The engine that executes a {@link DecisionGraph}.
@@ -92,8 +95,10 @@ public class RuntimeEngine {
 		@Override
 		public Node visit( CallNode nd ) throws DataTagsRuntimeException {
 			stack.push(nd);
+                        
 			// Dynamic linking to the destination node.
 			Node calleeNode = decisionGraph.getNode(nd.getCalleeNodeId());
+                        
 			if ( calleeNode == null ) {
 				setStatus(RuntimeEngineStatus.Error);
 				throw new MissingNodeException(RuntimeEngine.this, nd);
@@ -162,13 +167,16 @@ public class RuntimeEngine {
 		Node next = n;
 		do {
 			currentNode = next; // advance program counter
+                        System.out.println("next="+next.toString());
 			next = currentNode.accept(processNodeVisitor);
 			listener.ifPresent( l-> l.processedNode(this, getCurrentNode()) );
+                        
 		} while ( next != null );
-
+                
 		return getStatus() == RuntimeEngineStatus.Running;
 	}
 	
+        
 	/**
 	 * Advances the engine to the node appropriate for the
 	 * passed answer.
@@ -177,9 +185,30 @@ public class RuntimeEngine {
 	 * @throws DataTagsRuntimeException 
 	 */
 	public boolean consume( Answer ans ) throws DataTagsRuntimeException {
+            if (currentNode instanceof AskNode){
 		AskNode current = (AskNode) currentNode;
 		Node next = current.getNodeFor(ans);
 		return processNode( next );
+	}
+            else {
+                
+                return (consumeAllMulti(ans.getAnswersForMulti()));
+            }
+        
+        }
+        
+        public boolean consumeAllMulti( List<Integer> ansLst ) throws DataTagsRuntimeException {
+		MultiNode current = (MultiNode) currentNode;
+		boolean res = true;
+                for (int i=0;i< ansLst.size();i++){
+                    
+		
+                Answer ans = (current.getAnsAt(ansLst.get(i)-1));
+			res = processNode(current.getNodeFor(ans));
+                        System.out.println("res="+res+" current: "+current.toString());
+			if ( ! res && (i==ansLst.size()-1) ) return false;
+		}
+		return res;
 	}
 	
     public RuntimeEngineState createSnapshot() {

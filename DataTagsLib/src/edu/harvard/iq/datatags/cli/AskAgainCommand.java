@@ -20,7 +20,7 @@ public class AskAgainCommand implements CliCommand {
 
     @Override
     public void execute(CliRunner rnr, List<String> args) throws Exception {
-        rnr.printCurrentAskNode();
+        rnr.printCurrentAskOrMultiNode();
     }
     
 }
